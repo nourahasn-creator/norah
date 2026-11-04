@@ -1,0 +1,295 @@
+<title>ورشة المغلفات التفاعلية</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono&display=swap">
+<style>
+/* Layout: one reading column, RTL, live envelope as hero, numbered steps each with a live "picture" */
+:root{
+  --bg:#eef0eb; --surface:#f8f9f6; --fg:#262a27; --muted:#5d6660; --line:#d5dad3;
+  --env:#8fa89a; --env-dark:#7a9486; --letter:#fffdf8; --seal:#8c2f39; --accent:#8c2f39;
+  --code-bg:#22261f; --code-fg:#e4e8df;
+  --display:"Reem Kufi",system-ui,sans-serif; --body:"IBM Plex Sans Arabic",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#181b19;--surface:#212521;--fg:#e6e9e4;--muted:#a3aca5;--line:#353a36;--env:#6f8a7c;--env-dark:#5c7668;--letter:#f3f1ea;--seal:#b0434f;--accent:#e08a93;--code-bg:#0f110f;--code-fg:#dfe4da;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#181b19;--surface:#212521;--fg:#e6e9e4;--muted:#a3aca5;--line:#353a36;--env:#6f8a7c;--env-dark:#5c7668;--letter:#f3f1ea;--seal:#b0434f;--accent:#e08a93;--code-bg:#0f110f;--code-fg:#dfe4da;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.8;direction:rtl}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.35;margin:0}
+h1{font-size:clamp(30px,6vw,44px)}
+h2{font-size:26px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+h3{font-size:19px}
+p{margin:0}
+.lead{color:var(--muted);max-width:60ch;margin-top:10px}
+.note{margin-top:18px;padding:12px 16px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:14px}
+a{color:var(--accent)}
+code{font-family:var(--mono);font-size:.9em;background:var(--surface);border:1px solid var(--line);padding:1px 5px;border-radius:4px;direction:ltr;unicode-bidi:embed}
+
+/* hero */
+.hero{display:grid;justify-items:center;gap:10px;margin-top:28px;padding:28px 0 20px;background:var(--surface);border-radius:14px;border:1px solid var(--line)}
+.hero .hint{color:var(--muted);font-size:14px}
+
+/* envelope component (same as the template) */
+.envelope{position:relative;width:min(300px,78vw);aspect-ratio:3/2;background:var(--env-dark);border-radius:6px;perspective:900px;margin-top:110px}
+.envelope.big{cursor:pointer}
+.envelope:focus-visible{outline:3px solid var(--accent);outline-offset:6px}
+.letter{position:absolute;inset:6% 5% 6%;background:var(--letter);color:#2b2f2c;border-radius:4px;padding:12px;text-align:center;z-index:1;transition:transform .6s ease .5s;box-shadow:0 2px 6px rgba(0,0,0,.12);font-size:13px;line-height:1.6}
+.letter b{display:block;font-family:var(--display);font-size:20px;margin:4px 0}
+.pocket{position:absolute;inset:0;background:var(--env);border-radius:6px;z-index:2;clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%)}
+.flap{position:absolute;inset:0;background:var(--env-dark);z-index:3;clip-path:polygon(0 0,100% 0,50% 62%);transform-origin:top;transition:transform .5s ease,z-index 0s .25s}
+.seal{position:absolute;top:52%;left:50%;width:44px;height:44px;margin:-22px;border-radius:50%;background:var(--seal);color:#fff;display:grid;place-items:center;font-family:var(--display);z-index:4;transition:opacity .3s,transform .3s}
+.envelope.open .flap{transform:rotateX(180deg);z-index:0}
+.envelope.open .seal{opacity:0;transform:scale(.6)}
+.envelope.open .letter{transform:translateY(-62%)}
+
+/* small step pictures */
+.mini .envelope{width:200px;margin-top:20px}
+.mini .letter{font-size:9px;padding:6px}.mini .letter b{font-size:13px}
+.mini .seal{width:30px;height:30px;margin:-15px;font-size:12px}
+.s1 .letter,.s1 .pocket,.s1 .flap,.s1 .seal{display:none}
+.s2 .pocket,.s2 .flap,.s2 .seal{display:none}
+.s3 .flap,.s3 .seal{display:none}
+.s4 .seal{display:none}
+.outline .letter{outline:2px dashed var(--accent);outline-offset:2px}
+.outline .pocket{opacity:.85}
+
+/* steps */
+ol.steps{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:22px;counter-reset:s}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start}
+ol.steps>li::before{content:counter(s);font-family:var(--display);font-size:20px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--fg);color:var(--bg)}
+.body{min-width:0;display:grid;gap:10px}
+.body p{overflow-wrap:anywhere}
+.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;justify-items:center;gap:6px}
+.fig figcaption{font-size:13px;color:var(--muted);text-align:center}
+.mini{display:flex;justify-content:center;padding-bottom:6px}
+
+/* canva mock screens */
+.screens{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.phone{width:110px;aspect-ratio:9/16;border:2px solid var(--fg);border-radius:14px;background:var(--bg);position:relative;display:grid;place-items:center;font-size:11px;color:var(--muted);overflow:hidden}
+.phone .tag{position:absolute;top:6px;right:8px;font-family:var(--display);color:var(--fg)}
+.pe{width:76px;height:50px;background:var(--env);position:relative;border-radius:3px}
+.pe::after{content:"";position:absolute;inset:0;background:var(--env-dark);clip-path:polygon(0 0,100% 0,50% 60%)}
+.pe.o::after{clip-path:polygon(0 0,100% 0,50% -55%);top:0;inset:auto 0 100% 0;height:40px;clip-path:polygon(0 100%,100% 100%,50% 0)}
+.pc{width:64px;height:44px;background:var(--letter);border-radius:2px;position:absolute;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.arrow{align-self:center;font-size:20px;color:var(--muted)}
+
+pre{margin:0;background:var(--code-bg);color:var(--code-fg);border-radius:10px;padding:16px;overflow:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;direction:ltr;text-align:left;max-height:460px}
+.codehead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px;margin-bottom:8px}
+button.copy{font:inherit;font-size:14px;border:1px solid var(--fg);background:var(--fg);color:var(--bg);border-radius:8px;padding:6px 14px;cursor:pointer}
+button.copy:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+td,th{border-bottom:1px solid var(--line);padding:8px 6px;text-align:right;vertical-align:top}
+th{font-family:var(--display);font-weight:500}
+ul.links{padding-inline-start:20px;margin:12px 0 0}
+.choose{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:20px}
+.choose a{display:block;text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--surface)}
+.choose a strong{font-family:var(--display);font-size:18px;display:block}
+.choose a span{color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <h1>كيف تسوين مغلف تفاعلي يفتح بالضغط</h1>
+  <p class="lead">شرح خطوة بخطوة بالصور. جرّبي المغلف تحت أولاً: اضغطي عليه وشوفي كيف ينفتح الغطاء وتطلع البطاقة. بعدها اختاري الطريقة اللي تناسبك.</p>
+
+  <div class="hero">
+    <div class="envelope big" id="demo" role="button" tabindex="0" aria-label="افتح المغلف">
+      <div class="letter">يسعدنا دعوتكم<b>لحضور حفلنا</b>الخميس ١٢ ديسمبر · ٨ مساءً</div>
+      <div class="pocket"></div><div class="flap"></div><div class="seal">ن</div>
+    </div>
+    <p class="hint" id="demoHint">اضغطي على المغلف لفتحه</p>
+  </div>
+
+  <p class="note">ما قدرت أفتح رابط Google Drive اللي أرسلتيه، لأن الوصول لـ drive.google.com مقفل في إعدادات الشبكة عندي. بنيت الشرح على الشكل الشائع للمغلف التفاعلي (مغلف بختم، يفتح بالضغط وتطلع منه البطاقة). إذا كان اللي في المجلد مختلف (مثلاً مغلف ورقي مطبوع)، أرسلي لي صورة منه وأعدّل الشرح.</p>
+
+  <div class="choose">
+    <a href="#canva"><strong>الطريقة الأولى: كانفا</strong><span>بدون برمجة. تطلع لك فيديو أو موقع صغير تفتحه بالضغط.</span></a>
+    <a href="#code"><strong>الطريقة الثانية: صفحة ويب</strong><span>تنسخين ملف واحد جاهز، تغيرين الكلام والألوان، وترفعينه برابط.</span></a>
+  </div>
+
+  <h2 id="canva">الطريقة الأولى: كانفا (Canva) بدون برمجة</h2>
+  <p class="lead">الفكرة: نسوي ٣ صفحات بنفس الحجم (مغلف مقفول، مغلف مفتوح، البطاقة)، ونربطها بانتقال «مطابقة وتحريك» عشان تتحرك العناصر بسلاسة من صفحة لصفحة.</p>
+
+  <figure class="fig" style="margin:18px 0 0">
+    <div class="screens" aria-hidden="true">
+      <div class="phone"><span class="tag">١</span><div class="pe"></div></div>
+      <span class="arrow">←</span>
+      <div class="phone"><span class="tag">٢</span><div style="position:relative;display:grid;place-items:center"><div class="pc" style="top:-26px"></div><div class="pe o"></div></div></div>
+      <span class="arrow">←</span>
+      <div class="phone"><span class="tag">٣</span><div class="pc" style="position:static;width:84px;height:120px"></div></div>
+    </div>
+    <figcaption>الصفحات الثلاث: ١ المغلف مقفول ← ٢ الغطاء مفتوح والبطاقة طالعة ← ٣ البطاقة كاملة بالدعوة</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><div class="body"><h3>افتحي تصميم جديد بمقاس الجوال</h3>
+      <p>من Canva اضغطي «إنشاء تصميم» واختاري <b>فيديو للجوال</b> (1080×1920) لو تبغينه فيديو للواتساب، أو <b>موقع إلكتروني</b> لو تبغينه يفتح بالضغط.</p></div></li>
+    <li><div class="body"><h3>ارسمي المغلف في الصفحة الأولى</h3>
+      <p>من «العناصر» ابحثي عن <code>envelope</code> أو «ظرف»، أو ارسميه بنفسك: مستطيل للجسم + مثلث مقلوب للغطاء (Shapes ← Triangle ثم اقلبيه عمودياً). حطي دائرة صغيرة فوق رأس المثلث كختم، واكتبي عليها الحرف الأول من الاسم.</p>
+      <figure class="fig"><div class="mini s4"><div class="envelope"><div class="letter"></div><div class="pocket"></div><div class="flap"></div><div class="seal">ن</div></div></div><figcaption>جسم + غطاء مثلث. الختم نضيفه في الخطوة الجاية.</figcaption></figure></div></li>
+    <li><div class="body"><h3>أضيفي الختم وجملة «اضغط للفتح»</h3>
+      <p>ابحثي في العناصر عن <code>wax seal</code> لختم الشمع الجاهز، وغيري لونه. أضيفي تحت المغلف نص صغير: «اضغط لفتح الدعوة».</p>
+      <figure class="fig"><div class="mini"><div class="envelope"><div class="letter"></div><div class="pocket"></div><div class="flap"></div><div class="seal">ن</div></div></div><figcaption>الصفحة الأولى جاهزة.</figcaption></figure></div></li>
+    <li><div class="body"><h3>كرري الصفحة واقلبي الغطاء</h3>
+      <p>من فوق الصفحة اضغطي «تكرار الصفحة». في النسخة الجديدة: اقلبي مثلث الغطاء عمودياً وارفعيه فوق المغلف، احذفي الختم، وأضيفي مستطيل أبيض (البطاقة) طالع نصّه من المغلف. رتبي الطبقات: البطاقة <b>خلف</b> جسم المغلف (كليك يمين ← ترتيب ← إرسال للخلف).</p>
+      <figure class="fig"><div class="mini"><div class="envelope open"><div class="letter">يسعدنا دعوتكم<b>لحضور حفلنا</b></div><div class="pocket"></div><div class="flap"></div><div class="seal">ن</div></div></div><figcaption>الصفحة الثانية: الغطاء مفتوح والبطاقة نص طالعة.</figcaption></figure></div></li>
+    <li><div class="body"><h3>الصفحة الثالثة: البطاقة كاملة</h3>
+      <p>كرري الصفحة مرة ثانية، كبّري البطاقة لين تغطي الشاشة، واكتبي عليها نص الدعوة: الاسم، التاريخ، الوقت، الموقع (وتقدرين تحطين رابط خرائط Google على كلمة «الموقع»).</p></div></li>
+    <li><div class="body"><h3>أضيفي الحركة بين الصفحات</h3>
+      <p>مرري الماوس بين الصفحتين واضغطي «إضافة انتقال» ← اختاري <b>مطابقة وتحريك</b> (Match &amp; Move). كانفا يحرك أي عنصر موجود في الصفحتين من مكانه القديم للجديد، فيبان كأن الغطاء ينفتح والبطاقة تطلع. خلي المدة حوالي ٠٫٨ ثانية.</p>
+      <p>مهم: لا تحذفين العناصر وتضيفين غيرها. عدلي على نفس العناصر بعد التكرار، وإلا ما تشتغل المطابقة.</p></div></li>
+    <li><div class="body"><h3>خليه يفتح بالضغط، أو صدّريه فيديو</h3>
+      <p><b>فيديو:</b> مشاركة ← تنزيل ← MP4 وأرسليه بالواتساب.</p>
+      <p><b>تفاعلي بالضغط:</b> حددي المغلف في الصفحة الأولى ← أيقونة الرابط 🔗 ← اختاري «صفحة في هذا التصميم» ← الصفحة ٢. سوّي نفس الشي بالصفحة ٢ للصفحة ٣. بعدها مشاركة ← <b>نشر موقع إلكتروني</b>، وتطلع لك رابط ترسلينه للضيوف.</p></div></li>
+  </ol>
+
+  <h2 id="code">الطريقة الثانية: صفحة ويب جاهزة (نسخ ولصق)</h2>
+  <p class="lead">هذا هو نفس المغلف اللي جربتيه فوق. المغلف كله ٤ طبقات فوق بعض، وكل خطوة تحت تضيف طبقة. ما تحتاجين تفهمين البرمجة، بس تعرفين وش تغيرين.</p>
+
+  <ol class="steps">
+    <li><div class="body"><h3>جسم المغلف (الخلفية)</h3>
+      <p>مستطيل بلون أغمق شوي. هذا اللي يبان من داخل المغلف لما ينفتح. في الكود اسمه <code>.envelope</code>.</p>
+      <figure class="fig"><div class="mini s1"><div class="envelope"><div class="letter"></div><div class="pocket"></div><div class="flap"></div><div class="seal"></div></div></div><figcaption>طبقة ١: الجسم</figcaption></figure></div></li>
+    <li><div class="body"><h3>البطاقة داخل المغلف</h3>
+      <p>مستطيل فاتح فيه نص الدعوة، مخفي داخل المغلف. في الكود اسمه <code>.letter</code>.</p>
+      <figure class="fig"><div class="mini s2 outline"><div class="envelope"><div class="letter">يسعدنا دعوتكم<b>لحضور حفلنا</b></div><div class="pocket"></div><div class="flap"></div><div class="seal"></div></div></div><figcaption>طبقة ٢: البطاقة (الإطار المنقط بس للتوضيح)</figcaption></figure></div></li>
+    <li><div class="body"><h3>الجيب الأمامي</h3>
+      <p>نفس حجم المغلف بس مقصوص على شكل حرف V من فوق، عشان يغطي البطاقة من تحت والجوانب. القص يصير بسطر <code>clip-path</code>. اسمه <code>.pocket</code>.</p>
+      <figure class="fig"><div class="mini s3"><div class="envelope"><div class="letter">يسعدنا دعوتكم<b>لحضور حفلنا</b></div><div class="pocket"></div><div class="flap"></div><div class="seal"></div></div></div><figcaption>طبقة ٣: الجيب يغطي البطاقة</figcaption></figure></div></li>
+    <li><div class="body"><h3>الغطاء والختم</h3>
+      <p>مثلث مقلوب فوق الكل (<code>.flap</code>) ودائرة الختم (<code>.seal</code>). الغطاء ينقلب من حافته العلوية مثل الباب.</p>
+      <figure class="fig"><div class="mini"><div class="envelope"><div class="letter"></div><div class="pocket"></div><div class="flap"></div><div class="seal">ن</div></div></div><figcaption>طبقة ٤: المغلف مقفول</figcaption></figure></div></li>
+    <li><div class="body"><h3>الحركة: كلاس واحد اسمه open</h3>
+      <p>لما تضغطين، الجافاسكربت يضيف كلمة <code>open</code> للمغلف. هذي الكلمة تقلب الغطاء ١٨٠ درجة، تخفي الختم، وبعد نص ثانية ترفع البطاقة لفوق. اضغطي على الصورة تحت.</p>
+      <figure class="fig"><div class="mini"><div class="envelope big" id="mini5" role="button" tabindex="0" aria-label="افتح المغلف"><div class="letter">يسعدنا دعوتكم<b>لحضور حفلنا</b></div><div class="pocket"></div><div class="flap"></div><div class="seal">ن</div></div></div><figcaption>اضغطي للفتح والإغلاق</figcaption></figure></div></li>
+    <li><div class="body"><h3>انسخي الملف كامل وعدّلي عليه</h3>
+      <p>على الكمبيوتر افتحي Notepad (أو TextEdit على الماك بوضع «نص عادي»)، الصقي الكود، واحفظيه باسم <code>index.html</code>. افتحيه بالمتصفح وبيشتغل على طول.</p>
+      <div class="tbl"><table>
+        <tr><th>تبغين تغيرين</th><th>دوري على</th></tr>
+        <tr><td>لون المغلف</td><td><code>--env</code> و <code>--env-dark</code></td></tr>
+        <tr><td>لون الختم</td><td><code>--seal</code></td></tr>
+        <tr><td>الحرف على الختم</td><td><code>&lt;div class="seal"&gt;ن&lt;/div&gt;</code></td></tr>
+        <tr><td>نص الدعوة</td><td>داخل <code>&lt;div class="letter"&gt;</code></td></tr>
+        <tr><td>سرعة الفتح</td><td><code>.5s</code> و <code>.6s</code> (ثواني)</td></tr>
+      </table></div></div></li>
+    <li><div class="body"><h3>ارفعيه وأرسلي الرابط</h3>
+      <p>أسهل طريقة: افتحي <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a>، واسحبي المجلد اللي فيه <code>index.html</code>، ويعطيك رابط مجاني ترسلينه.</p>
+      <p><b>اسم كل ضيف:</b> أضيفي <code>?name=سارة</code> آخر الرابط، والبطاقة تكتب «أهلاً سارة» بدل العنوان. كذا كل ضيف يجيه رابط باسمه من نفس الملف.</p></div></li>
+  </ol>
+
+  <div class="codehead"><h3>الكود كامل</h3><button class="copy" id="copyBtn" type="button">نسخ الكود</button></div>
+  <pre id="code-block">&lt;!doctype html&gt;
+&lt;html lang=&quot;ar&quot; dir=&quot;rtl&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;دعوة خاصة&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;600&amp;display=swap&quot;&gt;
+&lt;style&gt;
+  /* ١) الألوان: غيّريها كما تحبين */
+  :root{
+    --page:#e9ece6;      /* خلفية الصفحة */
+    --env:#8fa89a;       /* لون المغلف */
+    --env-dark:#7a9486;  /* ظل المغلف */
+    --letter:#fffdf8;    /* لون البطاقة */
+    --seal:#8c2f39;      /* لون الختم */
+    --ink:#2b2f2c;       /* لون الكتابة */
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;gap:24px;
+       background:var(--page);font-family:&quot;IBM Plex Sans Arabic&quot;,system-ui,sans-serif;color:var(--ink)}
+
+  /* ٢) جسم المغلف */
+  .envelope{position:relative;width:min(320px,86vw);aspect-ratio:3/2;
+            background:var(--env-dark);border-radius:6px;cursor:pointer;perspective:900px;
+            margin-top:120px}
+
+  /* ٣) البطاقة داخل المغلف */
+  .letter{position:absolute;inset:6% 5% 6%;background:var(--letter);border-radius:4px;
+          padding:14px;text-align:center;z-index:1;
+          transition:transform .6s ease .5s;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  .letter h1{font-family:&quot;Reem Kufi&quot;,sans-serif;font-size:22px;margin:4px 0}
+  .letter p{margin:4px 0;font-size:14px}
+
+  /* ٤) الجيب الأمامي (مثلثات اليمين واليسار والأسفل) */
+  .pocket{position:absolute;inset:0;background:var(--env);border-radius:6px;z-index:2;
+          clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%)}
+
+  /* ٥) الغطاء العلوي الذي ينقلب */
+  .flap{position:absolute;inset:0;background:var(--env-dark);z-index:3;
+        clip-path:polygon(0 0,100% 0,50% 62%);
+        transform-origin:top;transition:transform .5s ease,z-index 0s .25s}
+
+  /* ٦) الختم */
+  .seal{position:absolute;top:52%;left:50%;width:46px;height:46px;margin:-23px;border-radius:50%;
+        background:var(--seal);color:#fff;display:grid;place-items:center;
+        font-family:&quot;Reem Kufi&quot;,sans-serif;z-index:4;transition:opacity .3s, transform .3s;
+        box-shadow:0 2px 0 rgba(0,0,0,.2)}
+
+  /* ٧) حالة الفتح: هنا السحر كله */
+  .envelope.open .flap{transform:rotateX(180deg);z-index:0}
+  .envelope.open .seal{opacity:0;transform:scale(.6)}
+  .envelope.open .letter{transform:translateY(-62%)}
+
+  .hint{font-size:14px;opacity:.7}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;envelope&quot; id=&quot;env&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-label=&quot;افتح المغلف&quot;&gt;
+    &lt;div class=&quot;letter&quot;&gt;
+      &lt;p&gt;يسعدنا دعوتكم&lt;/p&gt;
+      &lt;h1 id=&quot;guest&quot;&gt;لحضور حفلنا&lt;/h1&gt;
+      &lt;p&gt;الخميس ١٢ ديسمبر · الساعة ٨ مساءً&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;pocket&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;flap&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;seal&quot;&gt;ن&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p class=&quot;hint&quot; id=&quot;hint&quot;&gt;اضغط على المغلف لفتحه&lt;/p&gt;
+
+&lt;script&gt;
+  // ٨) الفتح والإغلاق بالضغط
+  const env = document.getElementById(&#x27;env&#x27;);
+  const hint = document.getElementById(&#x27;hint&#x27;);
+  function toggle(){
+    env.classList.toggle(&#x27;open&#x27;);
+    hint.textContent = env.classList.contains(&#x27;open&#x27;) ? &#x27;اضغط مرة ثانية لإغلاقه&#x27; : &#x27;اضغط على المغلف لفتحه&#x27;;
+  }
+  env.addEventListener(&#x27;click&#x27;, toggle);
+  env.addEventListener(&#x27;keydown&#x27;, e =&gt; { if (e.key === &#x27;Enter&#x27; || e.key === &#x27; &#x27;) { e.preventDefault(); toggle(); } });
+
+  // ٩) اسم الضيف من الرابط:  index.html?name=سارة
+  const name = new URLSearchParams(location.search).get(&#x27;name&#x27;);
+  if (name) document.getElementById(&#x27;guest&#x27;).textContent = &#x27;أهلاً &#x27; + name;
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+  <h2>فيديوهات تساعدك</h2>
+  <p class="lead">ما لقيت فيديو محدد أقدر أضمن لك إنه نفس الشكل، فهذي روابط بحث يوتيوب بالكلمات اللي تجيب أفضل نتائج:</p>
+  <ul class="links">
+    <li><a href="https://www.youtube.com/results?search_query=canva+clickable+envelope+invitation" target="_blank" rel="noopener">Canva clickable envelope invitation</a> (مغلف يفتح بالضغط في كانفا)</li>
+    <li><a href="https://www.youtube.com/results?search_query=canva+envelope+opening+animation+match+and+move" target="_blank" rel="noopener">Canva envelope opening animation match and move</a> (حركة فتح المغلف)</li>
+    <li><a href="https://www.youtube.com/results?search_query=%D9%85%D8%BA%D9%84%D9%81+%D8%AF%D8%B9%D9%88%D8%A9+%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A+%D9%83%D8%A7%D9%86%D9%81%D8%A7" target="_blank" rel="noopener">مغلف دعوة تفاعلي كانفا</a> (شروحات بالعربي)</li>
+    <li><a href="https://www.youtube.com/results?search_query=css+envelope+open+animation" target="_blank" rel="noopener">CSS envelope open animation</a> (للطريقة الثانية)</li>
+  </ul>
+  <p class="lead" style="margin-top:10px">ومقال مكتوب بالإنجليزي عن نفس فكرة الطريقة الثانية: <a href="https://medium.com/web-for-you/how-to-make-a-interactive-envelope-9df970614eea" target="_blank" rel="noopener">How To Make An Interactive Envelope</a>.</p>
+</div>
+
+<script>
+function wire(id, hintId){
+  const el=document.getElementById(id), hint=hintId&&document.getElementById(hintId);
+  const t=()=>{el.classList.toggle('open'); if(hint) hint.textContent=el.classList.contains('open')?'اضغطي مرة ثانية لإغلاقه':'اضغطي على المغلف لفتحه';};
+  el.addEventListener('click',t);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});
+}
+wire('demo','demoHint'); wire('mini5');
+document.getElementById('copyBtn').addEventListener('click',async e=>{
+  const pre=document.getElementById('code-block'), b=e.currentTarget;
+  try{await navigator.clipboard.writeText(pre.textContent); b.textContent='تم النسخ';}
+  catch(_){const r=document.createRange(); r.selectNodeContents(pre); const s=getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent='حدد الكود، اضغطي Ctrl+C';}
+  setTimeout(()=>b.textContent='نسخ الكود',2500);
+});
+</script>
